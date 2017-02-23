@@ -22,9 +22,12 @@ public class DoctorServiceDaoImpl implements DoctorServiceDao {
 	@Override
 	public List<Doctor> getDoctorByDate(Doctor doctor) {
 
-		
-		List<Doctor> response = jdbcTemplate.query(
-				"SELECT * FROM mahima.doctor WHERE registeredDate = NOW()-5", new DoctorExtractor());
+		String query = " SELECT * FROM mahima.doctor WHERE registeredDate >=  ? ";
+		String date = dateChange();
+		System.out.println(date);
+		Object[] args = { date };
+		List<Doctor> response = jdbcTemplate.query(query, args,
+				new DoctorExtractor());
 		if (response.size() > 0) {
 			return response;
 		} else {
@@ -32,17 +35,15 @@ public class DoctorServiceDaoImpl implements DoctorServiceDao {
 			return null;
 		}
 	}
-	
-	public static void main(String[] args) {
-		
-		Date date = new Date();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
-		String resp = sdf.format(date);
-		System.out.println(resp);
-		
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DAY_OF_MONTH, -5);
-		
-	}
 
+	public String dateChange() {
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.DATE, -10);
+		Date date = cal.getTime();
+		String dateToString = sdf.format(date);
+		return dateToString;
+	}
 }
